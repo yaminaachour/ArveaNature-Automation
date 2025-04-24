@@ -1,3 +1,6 @@
+import time
+
+from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 from .base_page import BasePage
@@ -10,7 +13,7 @@ class OrderPage(BasePage):
     PRODUCT_ITEM = (By.CSS_SELECTOR, ".products_view")
 
 
-#quantity
+    #quantity
     QUANTITY_INPUT = (By.ID, "quantity")
 
     ADD_PRODUCT =(By.ID, "add")
@@ -32,16 +35,16 @@ class OrderPage(BasePage):
     AGENCY_SEARCH_INPUT = (By.CSS_SELECTOR, "input.select2-search__field")
 
     # Locators pour le mode de paiement
-    # Conteneur Select2 visible
-    # Conteneur principal du Select2
+
     PAYMENT_SELECT2_CONTAINER = (By.CSS_SELECTOR,
                                  "span.select2-selection[aria-labelledby='select2-paymentMode-container']")
 
-
+    PAYMENT_SEARCH_INPUT = (By.XPATH, "//input[@aria-controls='select2-paymentMode-results']")
 
 
     ORDER_BUTTON = (By.ID, "saveOrderBtn")
-    SUCCESS_MESSAGE = (By.CLASS_NAME, " swal-modal")
+
+    SUCCESS_MESSAGE = (By.CLASS_NAME, "swal-modal")
 
     MSG_AGENCY_ERROR = (By.ID, "addDepot-error")
     MSG_PAYMENT_ERROR = (By.ID, "paymentMode-error")
@@ -54,9 +57,10 @@ class OrderPage(BasePage):
             # Champ de recherche
             search_field = self.wait.until(EC.element_to_be_clickable(self.PRODUCT_SEARCH_INPUT))
             search_field.click()
-
+            time.sleep(1)
             # Attendre que la liste apparaisse
             self.wait.until(EC.presence_of_element_located((By.ID, "searchResults_products")))
+            time.sleep(2)
             # Attendre qu'au moins un résultat soit cliquable
             self.wait.until(EC.element_to_be_clickable(self.PRODUCT_ITEM)).click()
 
@@ -121,12 +125,12 @@ class OrderPage(BasePage):
         # 1. Ouvrir le dropdown
         dropdown = self.wait.until(EC.element_to_be_clickable(self.PAYMENT_SELECT2_CONTAINER))
         dropdown.click()
-        # 2. Cliquer sur l'option correspondant au mode de paiement
-        option_locator = (By.XPATH, f"//li[contains(text(), '{payment_name}')]")
-        option = self.wait.until(EC.element_to_be_clickable(option_locator))
-        option.click()
-
-        self.wait.until(EC.element_to_be_clickable((By.XPATH, f"//li[normalize-space()='{payment_name}']"))).click()
+        # 2. Attendre que le champ de recherche s'affiche et y écrire la valeur
+        input_field = self.wait.until(EC.presence_of_element_located(
+        (By.XPATH, "//input[@aria-controls='select2-paymentMode-results']")))
+        input_field.send_keys(payment_name)
+        # 3. Valider avec Entrée pour sélectionner l'option
+        input_field.send_keys(Keys.ENTER)
 
     def is_total_net_payable_text_present(self):
         # Vérifie que le texte "Total net à payer" est présent dans l'élément
@@ -144,10 +148,8 @@ class OrderPage(BasePage):
         self.click(self.ORDER_BUTTON)
 
     def is_order_successful(self):
-        # Attendre que le message de succès soit visible
-        success_message_element = self.wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
-        # Vérifier que le message de succès est bien affiché
-        return success_message_element.is_displayed()
+        # Attendre que le message de succès apparaisse
+        return self.wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
 
     def is_agency_error_displayed(self):
         # Attendre que le message d'erreur de l'agence soit visible

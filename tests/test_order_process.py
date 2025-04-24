@@ -36,8 +36,8 @@ class TestOrderProcess:
 
         order_page = OrderPage(driver)
 
-        order_page.select_product()  # Remplacer par le nom réel du produit
-        driver.implicitly_wait(3)
+        order_page.select_product()
+        driver.implicitly_wait(7)
 
 
         # Étape 4: Ajuster la quantité à 5
@@ -71,6 +71,6 @@ class TestOrderProcess:
         # Étape 8: Cliquer sur “Commander”
         order_page.place_order()
 
-    #verfication
-    #assert order_page.is_order_successful(), "La commande n'a pas été passée avec succès"
-
+         #verfication
+        message = order_page.is_order_successful()
+        assert "succès" in message.text.lower()
