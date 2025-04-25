@@ -17,3 +17,7 @@ class BasePage:
 
     def get_text(self, locator):
         return self.wait.until(EC.visibility_of_element_located(locator)).text
+
+    def click_and_wait_for(self, click_locator, wait_locator):
+        self.wait.until(EC.element_to_be_clickable(click_locator)).click()
+        self.wait.until(EC.visibility_of_element_located(wait_locator))

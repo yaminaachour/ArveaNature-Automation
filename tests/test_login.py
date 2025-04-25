@@ -1,28 +1,23 @@
 import pytest
-import time
+
 from pages.login_page import LoginPage
 from utilities.config import Config
 import allure
 
+
 @pytest.mark.usefixtures("driver")
 class TestLogin:
 
-    @allure.step("Test de connexion complète (HTTP + formulaire)")
+    @allure.step("Test login success")
     def test_login_success(self, driver):
-        # Étape 1 : Authentification HTTP
-        with allure.step("1. Authentification HTTP"):
+        with allure.step("1. HTTP Authentication"):
             driver.get(Config.BASE_URL)
 
-        time.sleep(4)
-
-        # Étape 2 : Remplir formulaire utilisateur
-        with allure.step("2. Connexion via formulaire"):
+        with allure.step("2. Login via form"):
             login_page = LoginPage(driver)
             login_page.login(Config.CLIENT_LOGIN, Config.CLIENT_PASS)
-            time.sleep(1)
 
-        # Étape 3 : Vérification
-        with allure.step("3. Vérifier la connexion"):
-            print("URL actuelle:", driver.current_url)
-            print("Titre de la page:", driver.title)
+        with allure.step("3. Verify login success"):
+            print("Current URL:", driver.current_url)
+            print("Page title:", driver.title)
             assert "Dashboard" in driver.title

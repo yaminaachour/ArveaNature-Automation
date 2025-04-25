@@ -13,7 +13,5 @@ class LoginPage(BasePage):
     def login(self, username, password):
         self.enter_text(self.USERNAME_INPUT, username)
         self.enter_text(self.PASSWORD_INPUT, password)
-        print("→ Avant clic sur le bouton login")
-
         self.click(self.LOGIN_BUTTON)
-        print("→ Après clic sur le bouton login")
+
